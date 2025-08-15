@@ -9,6 +9,7 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/passport-google-oauth20": "^2.0.16",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
     "typescript": "5.8.3"
@@ -23,6 +24,7 @@
   ],
   "dependencies": {
     "jose": "^6.0.12",
+    "passport-google-oauth20": "^2.0.0",
     "zod": "^4.0.17"
   }
 }

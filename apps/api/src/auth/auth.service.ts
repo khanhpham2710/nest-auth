@@ -90,4 +90,26 @@ export class AuthService {
     const currentUser = { id: user.id };
     return currentUser;
   }
+
+  async refreshToken(userId: number, name: string) {
+    const { accessToken, refreshToken } = await this.generateTokens(userId);
+    const hashedRT = await hash(refreshToken);
+    await this.userService.updateHashedRefreshToken(userId, hashedRT);
+    return {
+      id: userId,
+      name: name,
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async validateGoogleUser(googleUser: CreateUserDto) {
+    const user = await this.userService.findByEmail(googleUser.email);
+    if (user) return user;
+    return await this.userService.create(googleUser);
+  }
+
+  async signOut(userId: number) {
+    return await this.userService.updateHashedRefreshToken(userId, null);
+  }
 }

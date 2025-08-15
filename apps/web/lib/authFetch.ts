@@ -7,7 +7,7 @@ export interface FetchOptions extends RequestInit {
 
 export const authFetch = async (
   url: string | URL,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
 ) => {
   const session = await getSession();
 
@@ -15,15 +15,12 @@ export const authFetch = async (
     ...options.headers,
     Authorization: `Bearer ${session?.accessToken}`,
   };
-  let response = await fetch(url, options);  
+  let response = await fetch(url, options);
 
   if (response.status === 401) {
-    if (!session?.refreshToken)
-      throw new Error("refresh token not found!");
+    if (!session?.refreshToken) throw new Error("refresh token not found!");
 
-    const newAccessToken = await refreshToken(
-      session.refreshToken
-    );
+    const newAccessToken = await refreshToken(session.refreshToken);
 
     if (newAccessToken) {
       options.headers.Authorization = `Bearer ${newAccessToken}`;

@@ -7,15 +7,37 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import refreshConfig from './config/refresh.config';
+import googleOauthConfig from './config/google-oauth.config';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { RefreshStrategy } from './strategies/refresh-token.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles/roles.guard';
 
 @Module({
   imports: [
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshConfig),
-    // ConfigModule.forFeature(googleOauthConfig),
+    ConfigModule.forFeature(googleOauthConfig),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, PrismaService],
+  providers: [
+    AuthService,
+    UserService,
+    PrismaService,
+    LocalStrategy,
+    RefreshStrategy,
+    GoogleStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard, //@UseGuard(JwtAuthGuard)
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard, //@UseGuard(Roles)
+    },
+  ],
 })
 export class AuthModule {}
